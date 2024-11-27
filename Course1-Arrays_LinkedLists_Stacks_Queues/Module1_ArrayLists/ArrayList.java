@@ -168,7 +168,7 @@ public class ArrayList<T> {
     }
 
     private boolean needsResize() {
-        return (size % INITIAL_CAPACITY == 0);
+        return ((size > 0) && (size % INITIAL_CAPACITY == 0));
     }
 
     private T[] getTempBackingArray() {
