@@ -164,7 +164,6 @@ public class ExternalChainingHashMap<K, V> {
             // Handle case where it is the head node
             rVal = table[idx].getValue();
             table[idx] = table[idx].getNext();
-            return rVal;
         } else {
             rVal = removeEntry(table[idx], key);
         }
