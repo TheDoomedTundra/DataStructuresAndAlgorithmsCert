@@ -18,6 +18,42 @@ public class BST<T extends Comparable<? super T>> {
      */
 
     /**
+     * Returns the data from the tree matching the given parameter.
+     *
+     * This should be done recursively.
+     *
+     * Do not return the same data that was passed in. Return the data that
+     * was stored in the tree.
+     *
+     * Hint: Should you use value equality or reference equality?
+     *
+     * Must be O(log n) for best and average cases and O(n) for worst case.
+     *
+     * @param data The data to search for. You may assume data is never null.
+     * @return The data in the tree equal to the parameter.
+     * @throws java.util.NoSuchElementException If the data is not in the tree.
+     */
+    public T get(T data) {
+        // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+        return getImpl(data, root);
+    }
+
+    private T getImpl(T data, BSTNode<T> curr) {
+        if (curr == null) {
+            throw new NoSuchElementException();
+        }
+
+        if (data.compareTo(curr.getData()) == 0) {
+            return curr.getData();
+        } else if (data.compareTo(curr.getData()) < 0) {
+            return getImpl(data, curr.getLeft());
+        } else {
+            return getImpl(data, curr.getRight());
+        }
+    }
+
+
+    /**
      * Adds the data to the tree.
      *
      * This must be done recursively.
@@ -73,6 +109,25 @@ public class BST<T extends Comparable<? super T>> {
         BSTNode<T> tmp = new BSTNode<>(data);
         root = removeImpl(root, data, tmp);
         return tmp.getData();
+    }
+
+    /**
+     * Returns whether or not data matching the given parameter is contained
+     * within the tree.
+     *
+     * This should be done recursively.
+     *
+     * Hint: Should you use value equality or reference equality?
+     *
+     * Must be O(log n) for best and average cases and O(n) for worst case.
+     *
+     * @param data The data to search for. You may assume data is never null.
+     * @return true if the parameter is contained within the tree, false otherwise.
+     */
+    public boolean contains(T data) {
+        assertNotNull(data);
+        // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+        return containsImpl(data, root);        
     }
 
     /**
@@ -158,5 +213,19 @@ public class BST<T extends Comparable<? super T>> {
             curr.setLeft(removeSuccessor(curr.getLeft(), dummy));
         }
         return curr;
+    }
+
+    private boolean containsImpl(T data, BSTNode<T> curr) {
+        if (curr == null) {
+            return false;
+        }
+        int result = data.compareTo(curr.getData());
+        if (result == 0) {
+            return true;
+        } else if (result < 0) {
+            return containsImpl(data, curr.getLeft());
+        } else {
+            return containsImpl(data, curr.getRight());
+        }
     }
 }
