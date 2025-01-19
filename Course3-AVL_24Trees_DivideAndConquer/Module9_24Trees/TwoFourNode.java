@@ -212,7 +212,7 @@ public class TwoFourNode<T extends Comparable<? super T>> {
      */
     public void setNode(int idx, TwoFourNode<T> node) {
         if (idx >= children.size()) {
-            children.add(node);
+            addNode(idx, node);
             return;
         }
         children.set(idx, node);

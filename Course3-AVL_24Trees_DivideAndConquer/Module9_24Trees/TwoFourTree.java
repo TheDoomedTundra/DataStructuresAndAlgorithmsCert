@@ -160,117 +160,9 @@ public class TwoFourTree<T extends Comparable<? super T>> {
 
         if (root.numSubNodes() <= 1) {
             root = root.getNode(0);
-        } else {
-            TwoFourNode<T> dummy2 = new TwoFourNode<>();
-            root = removePredecessor(root, dummy2);
-            root.addData(dummy2.getDataAtIdx(0));
         }
 
         return data;
-    }
-
-    /**
-     * Remove implementation
-     */
-    private TwoFourNode<T> removeImpl(T data, TwoFourNode<T> curr, TwoFourNode<T> dummy) {
-        if (curr == null) {
-            throw new NoSuchElementException("The following data was not found in the tree: " + data);
-        }
-
-        int idxToCheck = curr.size();
-        for (int i = 0; i < idxToCheck; i++) {
-            int res = data.compareTo(curr.getDataAtIdx(i));
-            if (res == 0) {
-                // Found it!
-                idxToCheck = -1;
-                break;
-            } else if (res < 0) {
-                idxToCheck = i;
-                break;
-            }
-        }
-
-        if (idxToCheck != -1) {
-            curr.setNode(idxToCheck, removeImpl(data, curr.getNode(idxToCheck), dummy));
-        } else {
-            int dataIdx = curr.getData().indexOf(data);
-            dummy.addData(curr.remove(data));
-            if (curr.numSubNodes() != 0) {
-                TwoFourNode<T> dummy2 = new TwoFourNode<>();
-                curr = removePredecessor(curr.getNode(dataIdx), dummy2);
-                curr.addData(dummy2.getDataAtIdx(0));
-            }
-            return curr;
-        }
-
-        // Leaf with multiple data, return the node
-        TwoFourNode<T> subNode = curr.getNode(idxToCheck);
-        if (subNode.numSubNodes() == 0 && !subNode.underflowed()) {
-            return curr;
-        } else if (subNode.numSubNodes() != 0) {
-            // Replace the data with the predecessor
-            TwoFourNode<T> dummy2 = new TwoFourNode<>();
-            curr.setNode(idxToCheck, removePredecessor(subNode, dummy2));
-            curr.getNode(idxToCheck).addData(dummy2.getDataAtIdx(0));
-        } else {
-            curr = transferOrFuse(curr, idxToCheck);
-        }
-        return transferOrFuse(curr, idxToCheck);
-    }
-
-    private TwoFourNode<T> removePredecessor(TwoFourNode<T> curr, TwoFourNode<T> dummy) {
-        // Need to handle underflow with this
-        if (curr.numSubNodes() == 0) {
-            T removed = curr.removeAt(curr.size() - 1);
-            dummy.addData(removed);
-            return curr;
-        } else {
-            curr.setNode(curr.size(), removePredecessor(curr.getNode(curr.size()), dummy));
-        }
-
-        return transferOrFuse(curr, curr.size());
-    }
-
-    private TwoFourNode<T> transferOrFuse(TwoFourNode<T> curr, int idx) {
-        if (!curr.getNode(idx).underflowed()){
-            return curr;
-        }
-
-        if (idx != 0 && curr.getNode(idx - 1).size() > 1) {
-            transferLeftToRight(curr, idx);
-        } else if (idx != curr.size() && curr.getNode(idx + 1).size() > 1) {
-            transferRightToLeft(curr, idx);
-        } else if (idx != 0 && curr.getNode(idx - 1).size() == 1) {
-            fuseWithLeft(curr, idx);
-        } else if (idx != curr.size() && curr.getNode(idx + 1).size() == 1) {
-            fuseWithRight(curr, idx);
-        }
-
-        return curr;
-    }
-
-    private void fuseWithLeft(TwoFourNode<T> curr, int idx) {
-        int lIdx = idx - 1;
-        curr.getNode(lIdx).addData(curr.removeAt(lIdx));
-        curr.removeNode(idx);
-    }
-
-    private void fuseWithRight(TwoFourNode<T> curr, int idx) {
-        int rIdx = idx + 1;
-        curr.getNode(rIdx).addData(curr.removeAt(idx));
-        curr.removeNode(idx);
-    }
-
-    private void transferRightToLeft(TwoFourNode<T> curr, int idx) {
-        int rIdx = idx + 1;
-        curr.getNode(idx).addData(curr.removeAt(idx));
-        curr.addData(curr.getNode(rIdx).removeAt(idx));
-    }
-
-    private void transferLeftToRight(TwoFourNode<T> curr, int idx) {
-        int lIdx = idx - 1;
-        curr.getNode(idx).addData(curr.removeAt(lIdx));
-        curr.addData(curr.getNode(lIdx).removeAt(curr.getNode(lIdx).size() - 1));
     }
 
     /**
@@ -402,4 +294,111 @@ public class TwoFourTree<T extends Comparable<? super T>> {
 
         return data;
     }
+
+    /**
+     * Remove implementation
+     */
+    private TwoFourNode<T> removeImpl(T data, TwoFourNode<T> curr, TwoFourNode<T> dummy) {
+        if (curr == null) {
+            throw new NoSuchElementException("The following data was not found in the tree: " + data);
+        }
+
+        int idxToCheck = curr.size();
+        for (int i = 0; i < idxToCheck; i++) {
+            int res = data.compareTo(curr.getDataAtIdx(i));
+            if (res == 0) {
+                // Found it!
+                idxToCheck = -1;
+                break;
+            } else if (res < 0) {
+                idxToCheck = i;
+                break;
+            }
+        }
+
+        if (idxToCheck != -1) {
+            curr.setNode(idxToCheck, removeImpl(data, curr.getNode(idxToCheck), dummy));
+        } else {
+            int dataIdx = curr.getData().indexOf(data);
+            dummy.addData(curr.remove(data));
+            if (curr.numSubNodes() != 0) {
+                TwoFourNode<T> dummy2 = new TwoFourNode<>();
+                curr.setNode(dataIdx, removePredecessor(curr.getNode(dataIdx), dummy2));
+                curr.addData(dummy2.getDataAtIdx(0));
+            }
+            return curr;
+        }
+
+        // Leaf with multiple data, return the node
+        TwoFourNode<T> subNode = curr.getNode(idxToCheck);
+        if (subNode.numSubNodes() == 0 && !subNode.underflowed()) {
+            return curr;
+        }
+        return transferOrFuse(curr, idxToCheck);
+    }
+
+    private TwoFourNode<T> removePredecessor(TwoFourNode<T> curr, TwoFourNode<T> dummy) {
+        // Need to handle underflow with this
+        if (curr.numSubNodes() == 0) {
+            T removed = curr.removeAt(curr.size() - 1);
+            dummy.addData(removed);
+            return curr;
+        } else {
+            curr.setNode(curr.size(), removePredecessor(curr.getNode(curr.size()), dummy));
+        }
+
+        return transferOrFuse(curr, curr.size());
+    }
+
+    private TwoFourNode<T> transferOrFuse(TwoFourNode<T> curr, int idx) {
+        if (!curr.getNode(idx).underflowed()){
+            return curr;
+        }
+
+        if (idx != 0 && curr.getNode(idx - 1).size() > 1) {
+            transferLeftToRight(curr, idx);
+        } else if (idx != curr.size() && curr.getNode(idx + 1).size() > 1) {
+            transferRightToLeft(curr, idx);
+        } else if (idx != 0 && curr.getNode(idx - 1).size() == 1) {
+            fuseWithLeft(curr, idx);
+        } else if (idx != curr.size() && curr.getNode(idx + 1).size() == 1) {
+            fuseWithRight(curr, idx);
+        }
+
+        return curr;
+    }
+
+    private void fuseWithLeft(TwoFourNode<T> curr, int idx) {
+        int lIdx = idx - 1;
+        curr.getNode(lIdx).addData(curr.removeAt(lIdx));
+        curr.removeNode(idx);
+    }
+
+    private void fuseWithRight(TwoFourNode<T> curr, int idx) {
+        int rIdx = idx + 1;
+        curr.getNode(rIdx).addData(curr.removeAt(idx));
+        curr.removeNode(idx);
+    }
+
+    private void transferRightToLeft(TwoFourNode<T> curr, int idx) {
+        int rIdx = idx + 1;
+        curr.getNode(idx).addData(curr.removeAt(idx));
+        curr.addData(curr.getNode(rIdx).removeAt(idx));
+    }
+
+    private void transferLeftToRight(TwoFourNode<T> curr, int idx) {
+        int lIdx = idx - 1;
+        curr.getNode(idx).addData(curr.removeAt(lIdx));
+        curr.addData(curr.getNode(lIdx).removeAt(curr.getNode(lIdx).size() - 1));
+    }
 }
+
+
+
+
+
+
+
+
+
+

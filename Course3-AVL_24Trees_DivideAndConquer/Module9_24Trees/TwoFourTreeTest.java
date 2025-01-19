@@ -23,6 +23,22 @@ public class TwoFourTreeTest {
         tree.add(10);
         assertThrows(IllegalArgumentException.class, () -> tree.add(10));
     }
+    
+    @Test
+    public void testAddDuplicateMidTree() {
+        LinkedList<List<Integer>> act = new LinkedList<>(Arrays.asList(
+            Arrays.asList(6), 
+            Arrays.asList(2), 
+            Arrays.asList(8, 11), 
+            Arrays.asList(0),
+            Arrays.asList(4, 5),
+            Arrays.asList(7),
+            Arrays.asList(10),
+            Arrays.asList(12, 13, 15)));
+
+        TwoFourTree<Integer> tree = new TwoFourTree<>(act);
+        assertThrows(IllegalArgumentException.class, () -> tree.add(8));
+    }
 
     @Test
     public void testAddNull() {
@@ -67,6 +83,20 @@ public class TwoFourTreeTest {
         TwoFourTree<Integer> tree = new TwoFourTree<>();
         tree.add(10);
         assertEquals(10, (int) tree.get(10));
+    }
+
+    @Test
+    public void testGetMultiple() {
+        LinkedList<List<Integer>> act = new LinkedList<>(Arrays.asList(
+            Arrays.asList(3, 5, 8), 
+            Arrays.asList(0, 1, 2), 
+            Arrays.asList(4), 
+            Arrays.asList(6, 7),
+            Arrays.asList(9, 11, 12)));
+
+        TwoFourTree<Integer> tree = new TwoFourTree<>(act);
+        assertEquals(0, (int) tree.get(0));
+        assertEquals(12, (int) tree.get(12));
     }
 
     @Test
@@ -125,13 +155,29 @@ public class TwoFourTreeTest {
     }
 
     @Test
-    public void testRemoveFusion() {
+    public void testRemoveFusionWithLeft() {
         TwoFourTree<Integer> tree = new TwoFourTree<>(Arrays.asList(1, 2, 3));
         tree.add(4);
         tree.remove(1);
         tree.remove(2);
 
         ArrayList<Integer> exp = new ArrayList<>(Arrays.asList(3, 4));
+        assertEquals(exp, linkedToArrayList(tree.levelorder()));
+    }
+
+    @Test
+    public void testRemoveFusionWithRight() {
+        LinkedList<List<Integer>> data = new LinkedList<>(Arrays.asList(
+            Arrays.asList(3, 6),
+            Arrays.asList(1),
+            Arrays.asList(4),
+            Arrays.asList(7)
+        ));
+        TwoFourTree<Integer> tree = new TwoFourTree<>(data);
+
+        tree.remove(4);
+
+        ArrayList<Integer> exp = new ArrayList<>(Arrays.asList(6, 1, 3, 7));
         assertEquals(exp, linkedToArrayList(tree.levelorder()));
     }
 
@@ -192,7 +238,19 @@ public class TwoFourTreeTest {
     }
 
     @Test
-    public void testRemoveTransfer() {
+    public void testRemoveTransferLeftToRight() {
+        TwoFourTree<Integer> tree = new TwoFourTree<>(Arrays.asList(2, 3, 4));
+        tree.add(0);
+        tree.add(1);
+        tree.remove(3);
+        tree.remove(4);
+
+        ArrayList<Integer> exp = new ArrayList<>(Arrays.asList(1, 0, 2));
+        assertEquals(exp, linkedToArrayList(tree.levelorder()));
+    }
+
+    @Test
+    public void testRemoveTransferRightToLeft() {
         TwoFourTree<Integer> tree = new TwoFourTree<>(Arrays.asList(1, 2, 3));
         tree.add(4);
         tree.remove(1);
@@ -332,6 +390,30 @@ public class TwoFourTreeTest {
             Arrays.asList(9),
             Arrays.asList(11, 12)));
         assertEquals(exp, tree.levelorder());
+    }
+
+    @Test
+    public void testRemovePredecessorMultipleLevels() {
+        // 5,17|2|10,13|20,24|0,1|4|7,8,9|11|14,16|18,19|22|27
+        LinkedList<List<Integer>> act = new LinkedList<>(Arrays.asList(
+            Arrays.asList(5, 17), 
+            Arrays.asList(2), 
+            Arrays.asList(10, 13), 
+            Arrays.asList(20, 24),
+            Arrays.asList(0, 1),
+            Arrays.asList(4),
+            Arrays.asList(7, 8, 9),
+            Arrays.asList(11),
+            Arrays.asList(14, 16),
+            Arrays.asList(18, 19),
+            Arrays.asList(22),
+            Arrays.asList(27)));
+
+        TwoFourTree<Integer> tree = new TwoFourTree<>(act);
+        tree.remove(17);
+
+        List<Integer> exp = new ArrayList<>(Arrays.asList(5,16,2,10,13,20,24,0,1,4,7,8,9,11,14,18,19,22,27));
+        assertEquals(exp, linkedToArrayList(tree.levelorder()));
     }
 
     public static <T> LinkedList<T> deepCopyLinkedList(LinkedList<T> original) {
