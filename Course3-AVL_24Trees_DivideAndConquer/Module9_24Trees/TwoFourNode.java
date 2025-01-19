@@ -11,15 +11,15 @@ public class TwoFourNode<T extends Comparable<? super T>> {
     public static final int MAX_CAPACITY = 3;
 
     private List<TwoFourNode<T>> children;
-    private int height;
     private List<T> nodeData;    
 
     /**
      * Create an empty TwoFourNode
      */
     public TwoFourNode() {
-        this.children = new ArrayList<>(MAX_CAPACITY + 1);
-        this.nodeData = new ArrayList<>(MAX_CAPACITY);
+        // Add 1 to each to allow for overflow
+        this.children = new ArrayList<>(MAX_CAPACITY + 2);
+        this.nodeData = new ArrayList<>(MAX_CAPACITY + 1);
     }
 
     /**
@@ -51,15 +51,35 @@ public class TwoFourNode<T extends Comparable<? super T>> {
      * Add a non-duplicate data to the node
      * 
      * @param data
+     * @return The index the data was added at
      * @throws java.lang.IllegalArgumentException If the data is null or a duplicate
      */
-    public void addData(T data) {
+    public int addData(T data) {
         if (contains(data)) {
             throw new IllegalArgumentException("Error: " + data + " is already in the node, no duplicates allowed");
         }
 
-        nodeData.add(data);
-        enforceOrder();
+        for (int i = 0; i < nodeData.size(); i++) {
+            if (data.compareTo(nodeData.get(i)) < 0) {
+                nodeData.add(i, data);
+                return i;
+            }
+        }
+
+        nodeData.addLast(data);
+        return nodeData.size() - 1;
+    }
+
+    /**
+     * Add the n-th sub-node, shifting others to the right
+     * 
+     * @param idx The index to add the node at
+     * @param node The node to add
+     * @throws java.lang.IndexOutOfBoundsException If the index is too large
+     * 
+     */
+    public void addNode(int idx, TwoFourNode<T> node) {
+        children.add(idx, node);
     }
 
     /**
@@ -94,15 +114,6 @@ public class TwoFourNode<T extends Comparable<? super T>> {
     }
 
     /**
-     * Gets the height.
-     *
-     * @return The height.
-     */
-    public int getHeight() {
-        return height;
-    }
-
-    /**
      * Get all sub-nodes of this node
      * 
      * @return All of the child nodes
@@ -115,11 +126,28 @@ public class TwoFourNode<T extends Comparable<? super T>> {
      * Get sub-node at a specific index. Passes the null checking onto
      * the caller
      * 
-     * @return The idx-th child node
-     * @throws java.lang.IndexOutOfBoundsException If the index is larger than the number of nodes
+     * @return The idx-th child node or null if it does not exist
      */
-    public TwoFourNode<T> getSubNodeAt(int idx) {
+    public TwoFourNode<T> getNode(int idx) {
+        if (idx >= children.size()) {
+            return null;
+        }
         return children.get(idx);
+    }
+
+    /** 
+     * Get the number of children of the node
+     * 
+     * @return The number of sub-nodes
+     */
+    public int numSubNodes() {
+        int num = 0;
+        for (TwoFourNode<T> element : children) {
+            if (element != null) {
+                num++;
+            }
+        }
+        return num;
     }
 
     /**
@@ -165,16 +193,17 @@ public class TwoFourNode<T extends Comparable<? super T>> {
     }
 
     /**
-     * Sets the height.
-     *
-     * @param height The new height.
+     * Remove the n-th sub-node
+     * 
+     * @param idx THe index of the node to remove
      */
-    public void setHeight(int height) {
-        this.height = height;
+    public void removeNode(int idx) {
+        children.remove(idx);
     }
+
     
     /**
-     * Set the n-th sub-node
+     * Set the n-th sub-node. If idx is out of range, default to adding
      * 
      * @param idx The index to add the node at
      * @param node The node to add
@@ -182,7 +211,11 @@ public class TwoFourNode<T extends Comparable<? super T>> {
      * 
      */
     public void setNode(int idx, TwoFourNode<T> node) {
-        children.add(idx, node);
+        if (idx >= children.size()) {
+            children.add(node);
+            return;
+        }
+        children.set(idx, node);
     }
 
     /**

@@ -3,6 +3,8 @@ package Module9_24Trees;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 
@@ -11,8 +13,9 @@ public class TwoFourNodeTest {
     @Test
     public void testAddData() {
         TwoFourNode<Integer> node = new TwoFourNode<>();
-        node.addData(10);
+        int idx = node.addData(10);
         assertTrue(node.contains(10));
+        assertEquals(idx, 0);
     }
 
     @Test
@@ -42,7 +45,8 @@ public class TwoFourNodeTest {
         TwoFourNode<Integer> node = new TwoFourNode<>();
         node.addData(30);
         node.addData(10);
-        node.addData(20);
+        int idx = node.addData(20);
+        assertEquals(idx, 1);
         assertEquals(Arrays.asList(10, 20, 30), node.getData());
     }
 
@@ -89,10 +93,23 @@ public class TwoFourNodeTest {
     }
 
     @Test
-    public void testGetSetHeight() {
+    public void testGetDataNegative() {
         TwoFourNode<Integer> node = new TwoFourNode<>();
-        node.setHeight(5);
-        assertEquals(5, node.getHeight());
+        List<Integer> exp = new ArrayList<>();
+        assertEquals(exp, node.getData());
+    }
+
+    @Test
+    public void testGetAddSubNodes() {
+        TwoFourNode<Integer> parent = new TwoFourNode<>();
+        TwoFourNode<Integer> child = new TwoFourNode<>(20);
+        parent.addNode(0, child);
+        assertEquals(Arrays.asList(child), parent.getSubNodes());
+
+        TwoFourNode<Integer> child2 = new TwoFourNode<>(20);
+        parent.addNode(0, child2);
+        assertEquals(child2, parent.getNode(0));
+        assertEquals(child, parent.getNode(1));
     }
 
     @Test
@@ -102,8 +119,28 @@ public class TwoFourNodeTest {
         parent.setNode(0, child);
         assertEquals(Arrays.asList(child), parent.getSubNodes());
 
+        TwoFourNode<Integer> child2 = new TwoFourNode<>(20);
+        parent.setNode(1, child2);
+        assertEquals(child2, parent.getNode(1));
+    }
+
+    @Test
+    public void testGetSetSubNodesNegative() {
+        TwoFourNode<Integer> parent = new TwoFourNode<>();
+        List<TwoFourNode<Integer>> exp = new ArrayList<>();
+        assertEquals(exp, parent.getSubNodes());
+
         parent.setNode(0, new TwoFourNode<>(20));
-        assertEquals(child, parent.getSubNodeAt(1));
+        assertEquals(null, parent.getNode(1));
+    }
+
+    @Test
+    public void testNumSubNodes() {
+        TwoFourNode<Integer> node = new TwoFourNode<>();
+        assertEquals(0, node.numSubNodes());
+
+        node.setNode(0, new TwoFourNode<>(20));
+        assertEquals(1, node.numSubNodes());
     }
 
     @Test
@@ -131,6 +168,16 @@ public class TwoFourNodeTest {
         TwoFourNode<Integer> node = new TwoFourNode<>(Arrays.asList(10, 20, 30));
         node.removeAt(0);
         assertFalse(node.contains(10));
+    }
+
+    @Test
+    public void testRemoveNode() {
+        TwoFourNode<Integer> parent = new TwoFourNode<>();
+        TwoFourNode<Integer> child = new TwoFourNode<>(20);
+        parent.addNode(0, child);
+        parent.removeNode(0);
+        assertEquals(0, parent.numSubNodes());
+        assertEquals(0, parent.getSubNodes().size());
     }
 
     @Test

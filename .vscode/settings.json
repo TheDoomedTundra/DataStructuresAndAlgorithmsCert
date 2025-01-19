@@ -1,3 +1,12 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.sourcePaths": [
+        "Course1-Arrays_LinkedLists_Stacks_Queues",
+        "Course2-Trees_Heaps_SkipLists_HashMaps",
+        "Course3-AVL_24Trees_DivideAndConquer"
+    ],
+    "java.project.referencedLibraries": [
+        "c:\\Users\\nshoe\\OneDrive\\Documents\\Coding\\DataStructuresAndAlgorithmsCert\\test-lib\\hamcrest-core-1.3.jar",
+        "c:\\Users\\nshoe\\OneDrive\\Documents\\Coding\\DataStructuresAndAlgorithmsCert\\test-lib\\junit-4.13.2.jar"
+    ]
 }
