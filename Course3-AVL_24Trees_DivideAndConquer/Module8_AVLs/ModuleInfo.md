@@ -49,12 +49,12 @@ Update height & BF of A
 Update height & BF of B
 return B
 ```
-* If the BF of the left child os 1 or 0, one single right rotation is required
+* If the BF of the left child os 1 or 0, one single right rotation is required. A right rotation for a left unbalanced tree
 ```
-Node B =  C's left child
-C's left child = B's right child
-B's right child = C
-Update height and BF of C
+Node B =  A's left child
+A's left child = B's right child
+B's right child = A
+Update height and BF of A
 Update height and BF of B
 return B
 ```
