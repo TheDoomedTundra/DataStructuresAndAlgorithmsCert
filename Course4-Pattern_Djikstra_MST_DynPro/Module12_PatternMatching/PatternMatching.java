@@ -58,6 +58,41 @@ public class PatternMatching {
         return matches;
     }
 
+    public static List<Integer> boyerMooreGalil(CharSequence pattern, CharSequence text, CharacterComparator comp) {
+        Map<Character, Integer> last = buildLastTable(pattern);
+        List<Integer> failureTable = buildFailureTable(pattern, comp);
+
+        int m = pattern.length();
+        int n = text.length();
+        int periodicity = m - failureTable.getLast();
+
+        List<Integer> matches = new ArrayList<>();
+
+        int i = 0, lowerBound = 0;
+        while (i <= n - m) {
+            int j = m - 1;
+            while (j >= lowerBound && comp.compare(text.charAt(i+j), pattern.charAt(j)) == 0) {
+                j--;
+            }
+
+            if (j < lowerBound) {
+                matches.add(i);
+                i = i + periodicity;
+                lowerBound = m - periodicity;
+            } else {
+                int shift = last.getOrDefault(text.charAt(i+j), -1);
+                if (shift < j) {
+                    i = i + j - shift;
+                } else {
+                    i++;
+                }
+                lowerBound = 0;
+            }
+        }
+
+        return matches;
+    }
+
     /**
      * Builds the last occurrence table that will be used to run the Boyer Moore algorithm.
      *

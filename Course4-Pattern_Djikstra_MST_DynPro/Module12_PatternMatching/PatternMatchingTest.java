@@ -48,6 +48,19 @@ public class PatternMatchingTest {
         bmHelper("lack","sphinxofblackquartz", Arrays.asList(9), 9);
     }
 
+    public static void galilHelper(CharSequence pattern, CharSequence text, List<Integer> exp, int comparisons) {
+        CharacterComparator comparator = new CharacterComparator();
+
+        List<Integer> act = PatternMatching.boyerMooreGalil(pattern, text, comparator);
+        assertEquals(act, exp);
+        assertEquals(comparator.getComparisonCount(), comparisons);
+    }
+
+    @Test
+    public void testBoyerMooreGalil() {
+        galilHelper("caa","aabbabaabacaaaa", Arrays.asList(10), 10);
+    }
+
     @Test
     public void testFailureTable() {
         CharSequence pattern = "caa";
