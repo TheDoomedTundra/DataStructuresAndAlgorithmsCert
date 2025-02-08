@@ -1,6 +1,6 @@
-# Stacks
-Like queues, are a Linear ADT
-Unlike queues, are FIFO <u>not</u> LIFO
+# Queues
+Like stacks, are a Linear ADT
+Unlike stacks, are FIFO <u>not</u> LIFO
     <br>-> Like a wait list or line, first there is first served
 
 ## Supported Ops
